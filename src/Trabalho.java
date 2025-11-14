@@ -29,6 +29,20 @@ public class Trabalho {
         }
     }
 
+    public static void limparTerminal() {
+        try {
+            String os = System.getProperty("os.name");
+
+            if (os.contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                new ProcessBuilder("clear").inheritIO().start().waitFor();
+            }
+        } catch (Exception exception) {
+            // Lidar com a exceção
+        }
+    }
+
     public static void posicionarNavioUsuario(String[][] tabuleiro, String nomeNavio, int tamanho) {
         Scanner sc = new Scanner(System.in);
         int linha, coluna, direcao;
@@ -44,7 +58,7 @@ public class Trabalho {
             System.out.println("Digite a coluna (0 - " + (tamanho_tabuleiro - 1) + "): ");
             coluna = sc.nextInt();
 
-            System.out.println("Escolha a direção:\n0 = horizontal →,\n1 = vertical ↓,\n2 = diagonal ↘,\n3 = diagonal ↙");
+            System.out.println("Escolha a direção:\n0 = horizontal,\n1 = vertical,\n2 = diagonal,\n3 = diagonal");
             System.out.print("Digite a direção: ");
             direcao = sc.nextInt();
 
@@ -192,16 +206,18 @@ public class Trabalho {
 
             sucesso = true;
         }
+        limparTerminal();
     }
 
     public static void realizarAtaque(String[][] tabuleiro_real, String[][] tabuleiro_vazio){
         Scanner sc = new Scanner(System.in);
         int tamanho_tabuleiro = tabuleiro_real.length;
-        int linha, coluna, direcao;
-        boolean sucesso = false;
+        int linha, coluna, tentativas=0;
+        boolean fim = false;
+        System.out.println("\n================================================\n");
+        exibirTabuleiro(tabuleiro_vazio);
+        while (fim == false){
 
-        while (sucesso == false){
-            exibirTabuleiro(tabuleiro_vazio);
             System.out.println("Digite a linha do ponto que voce deseja atacar (0-9): ");
             linha = sc.nextInt();
             System.out.println("Digite a coluna do ponto que voce deseja atacar(0-9): ");
@@ -213,14 +229,29 @@ public class Trabalho {
                 continue;
             }
 
+            if (tabuleiro_vazio[linha][coluna].equals("X") || tabuleiro_vazio[linha][coluna].equals("O")) {
+                System.out.println("Você já atacou esse ponto! Escolha outro.");
+                continue;
+            }
+            tentativas++;
+
             if (tabuleiro_real[linha][coluna] == "~"){
                 System.out.println("Voce errou!");
+                tabuleiro_real[linha][coluna] = "O";
+                tabuleiro_vazio[linha][coluna] = "O";
+                exibirTabuleiro(tabuleiro_vazio);
+            }
+            if (tabuleiro_real[linha][coluna] == "N"){
+                System.out.println("Voce acertou um navio!");
+                tabuleiro_real[linha][coluna] = "X";
+                tabuleiro_vazio[linha][coluna] = "X";
+                exibirTabuleiro(tabuleiro_vazio);
             }
         }
-
-
-
+        fim = true;
     }
+
+
 
     static void main() {
         Scanner sc = new Scanner(System.in);
@@ -237,5 +268,9 @@ public class Trabalho {
         exibirTabuleiro(tabuleiro_navios);
         posicionarNavioUsuario(tabuleiro_navios, "Bote", 1);
         exibirTabuleiro(tabuleiro_navios);
+        limparTerminal();
+
+        realizarAtaque(tabuleiro_navios, tabuleiro_vazio);
+
     }
 }
