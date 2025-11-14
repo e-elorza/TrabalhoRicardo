@@ -29,41 +29,213 @@ public class Trabalho {
         }
     }
 
-    public static boolean posicionarNavioUsuario(String[][] tabuleiro, int tamanho, String nomeNavio) {
+    public static void posicionarNavioUsuario(String[][] tabuleiro, String nomeNavio, int tamanho) {
         Scanner sc = new Scanner(System.in);
         int linha, coluna, direcao;
-        int n = tabuleiro.length;
+        int tamanho_tabuleiro = tabuleiro.length;
         boolean sucesso = false;
 
-        while (!sucesso){
+        while (sucesso == false) {
             System.out.println("Posicione o navio: " + nomeNavio + " (tamanho " + tamanho + ")");
 
-            System.out.println("Digite a linha (0 - " + (n-1) + "): ");
+            System.out.println("Digite a linha (0 - " + (tamanho_tabuleiro - 1) + "): ");
             linha = sc.nextInt();
 
-            System.out.println("Digite a coluna (0 - " + (n-1) + "): ");
+            System.out.println("Digite a coluna (0 - " + (tamanho_tabuleiro - 1) + "): ");
             coluna = sc.nextInt();
 
-            System.out.println("Escolha a direção: 0 = horizontal →, 1 = vertical ↓, 2 = diagonal ↘, 3 = diagonal ↙");
+            System.out.println("Escolha a direção:\n0 = horizontal →,\n1 = vertical ↓,\n2 = diagonal ↘,\n3 = diagonal ↙");
             System.out.print("Digite a direção: ");
             direcao = sc.nextInt();
 
-            if (linha < 0 || linha >= n || coluna < 0 || coluna >= n || direcao < 0 || direcao > 3) {
+            if (linha < 0 || linha >= tamanho_tabuleiro || coluna < 0 || coluna >= tamanho_tabuleiro || direcao < 0 || direcao > 3) {
                 System.out.println("Entrada inválida! Tente novamente.\n");
                 continue;
             }
 
+            if (direcao == 0) {
+                if (coluna + tamanho > tamanho_tabuleiro) {
+                    System.out.println("O navio nao cabe no tabuleiro!");
+                    continue;
+                }
+            }
+            if (direcao == 1) {
+                if (linha + tamanho > tamanho_tabuleiro) {
+                    System.out.println("O navio nao cabe no tabuleiro!");
+                    continue;
+                }
+            }
+            if (direcao == 2) {
+                if (linha + tamanho > tamanho_tabuleiro || coluna + tamanho > tamanho_tabuleiro) {
+                    System.out.println("O navio nao cabe no tabuleiro!");
+                    continue;
+                }
+            }
+            if (direcao == 3) {
+                if (linha + tamanho > tamanho_tabuleiro || coluna - tamanho < 0) {
+                    System.out.println("==================================");
+                    System.out.println("\nO navio nao cabe no tabuleiro!");
+                    System.out.println("Nao foi possivel posicionar" + nomeNavio);
+                    System.out.println("Tente novamente!");
+                    System.out.println("==================================");
+                    continue;
+                }
+            }
+
+            int linha2 = linha;
+            int coluna2 = coluna;
+            boolean podeColocar = true;
+
+            if (direcao == 0) {
+                for (int i = 0; i < tamanho; i++) {
+                    if (tabuleiro[linha2][coluna2] != "~") {
+                        System.out.println("\n==================================");
+                        System.out.println("O navio nao cabe no tabuleiro!");
+                        System.out.println("Nao foi possivel posicionar: " + nomeNavio);
+                        System.out.println("Tente novamente!");
+                        System.out.println("==================================\n");
+                        podeColocar = false;
+                        break;
+                    } else {
+                        coluna2 += 1;
+                    }
+                }
+            }
+
+            if (direcao == 1) {
+                for (int i = 0; i < tamanho; i++) {
+                    if (tabuleiro[linha2][coluna2] != "~") {
+                        System.out.println("\n==================================");
+                        System.out.println("O navio nao cabe no tabuleiro!");
+                        System.out.println("Nao foi possivel posicionar: " + nomeNavio);
+                        System.out.println("Tente novamente!");
+                        System.out.println("==================================\n");
+                        podeColocar = false;
+                        break;
+                    } else {
+                        linha2 += 1;
+                    }
+                }
+            }
+
+            if (direcao == 2) {
+                for (int i = 0; i < tamanho; i++) {
+                    if (tabuleiro[linha2][coluna2] != "~") {
+                        System.out.println("\n==================================");
+                        System.out.println("O navio nao cabe no tabuleiro!");
+                        System.out.println("Nao foi possivel posicionar: " + nomeNavio);
+                        System.out.println("Tente novamente!");
+                        System.out.println("==================================\n");
+                        podeColocar = false;
+                        break;
+                    } else {
+                        linha2 += 1;
+                        coluna2 += 1;
+                    }
+                }
+            }
+
+            if (direcao == 3) {
+                for (int i = 0; i < tamanho; i++) {
+                    if (tabuleiro[linha2][coluna2] != "~") {
+                        System.out.println("\n==================================");
+                        System.out.println("O navio nao cabe no tabuleiro!");
+                        System.out.println("Nao foi possivel posicionar: " + nomeNavio);
+                        System.out.println("Tente novamente!");
+                        System.out.println("==================================\n");
+                        podeColocar = false;
+                        break;
+                    } else {
+                        linha2 += 1;
+                        coluna2 -= 1;
+                    }
+                }
+            }
+
+            if (podeColocar == false){
+                continue;
+            }
+
+            int coluna3 = coluna;
+            int linha3 = linha;
+
+
+            if (direcao == 0) {
+                for (int i = 0; i < tamanho; i++) {
+                    tabuleiro[linha][coluna3] = "N";
+                    coluna3 += 1;
+                }
+            }
+
+            if (direcao == 1) {
+                for (int i = 0; i < tamanho; i++) {
+                    tabuleiro[linha3][coluna] = "N";
+                    linha3 += 1;
+                }
+            }
+
+            if (direcao == 2) {
+                for (int i = 0; i < tamanho; i++) {
+                    tabuleiro[linha3][coluna3] = "N";
+                    coluna3 += 1;
+                    linha3 += 1;
+                }
+            }
+
+            if (direcao == 3) {
+                for (int i = 0; i < tamanho; i++) {
+                    tabuleiro[linha3][coluna3] = "N";
+                    coluna3 -= 1;
+                    linha3 += 1;
+                }
+            }
+
+            sucesso = true;
         }
     }
 
-        static void main () {
-            Scanner sc = new Scanner(System.in);
-            String[][] tabuleiro_navios = inicializarTabuleiro(10);
-            preencherTabuleiro(tabuleiro_navios);
+    public static void realizarAtaque(String[][] tabuleiro_real, String[][] tabuleiro_vazio){
+        Scanner sc = new Scanner(System.in);
+        int tamanho_tabuleiro = tabuleiro_real.length;
+        int linha, coluna, direcao;
+        boolean sucesso = false;
 
-            exibirTabuleiro(tabuleiro_navios);
+        while (sucesso == false){
+            exibirTabuleiro(tabuleiro_vazio);
+            System.out.println("Digite a linha do ponto que voce deseja atacar (0-9): ");
+            linha = sc.nextInt();
+            System.out.println("Digite a coluna do ponto que voce deseja atacar(0-9): ");
+            coluna = sc.nextInt();
 
 
+            if (linha < 0 || linha >= tamanho_tabuleiro || coluna < 0 || coluna >= tamanho_tabuleiro) {
+                System.out.println("Entrada inválida! Tente novamente.\n");
+                continue;
+            }
+
+            if (tabuleiro_real[linha][coluna] == "~"){
+                System.out.println("Voce errou!");
+            }
         }
-}
 
+
+
+    }
+
+    static void main() {
+        Scanner sc = new Scanner(System.in);
+        String[][] tabuleiro_navios = inicializarTabuleiro(10);
+        String[][] tabuleiro_vazio = inicializarTabuleiro(10);
+        preencherTabuleiro(tabuleiro_navios);
+        preencherTabuleiro(tabuleiro_vazio);
+
+        posicionarNavioUsuario(tabuleiro_navios, "Porta Navios", 4);
+        exibirTabuleiro(tabuleiro_navios);
+        posicionarNavioUsuario(tabuleiro_navios, "Fragata", 3);
+        exibirTabuleiro(tabuleiro_navios);
+        posicionarNavioUsuario(tabuleiro_navios, "Submarino", 2);
+        exibirTabuleiro(tabuleiro_navios);
+        posicionarNavioUsuario(tabuleiro_navios, "Bote", 1);
+        exibirTabuleiro(tabuleiro_navios);
+    }
+}
