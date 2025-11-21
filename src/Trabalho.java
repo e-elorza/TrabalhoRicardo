@@ -29,20 +29,6 @@ public class Trabalho {
         }
     }
 
-    public static void limparTerminal() {
-        try {
-            String os = System.getProperty("os.name");
-
-            if (os.contains("Windows")) {
-                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            } else {
-                new ProcessBuilder("clear").inheritIO().start().waitFor();
-            }
-        } catch (Exception exception) {
-            // Lidar com a exceção
-        }
-    }
-
     public static void posicionarNavioUsuario(String[][] tabuleiro, String nomeNavio, int tamanho) {
         Scanner sc = new Scanner(System.in);
         int linha, coluna, direcao;
@@ -206,17 +192,30 @@ public class Trabalho {
 
             sucesso = true;
         }
-        limparTerminal();
     }
 
-    public static void realizarAtaque(String[][] tabuleiro_real, String[][] tabuleiro_vazio){
+    public static boolean verificarFimDeJogo(String[][] tabuleiro){
+        for (int i = 0; i < tabuleiro.length; i++) {
+            for (int j = 0; j < tabuleiro.length; j++) {
+                if (tabuleiro[i][j] == "N"){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static void realizarAtaque(String[][] tabuleiro, String[][] tabuleiro_vazio){
         Scanner sc = new Scanner(System.in);
-        int tamanho_tabuleiro = tabuleiro_real.length;
-        int linha, coluna, tentativas=0;
+        int tamanho_tabuleiro = tabuleiro.length;
+        int linha, coluna;
+        int tentativas = 0, limiteTentativas = 30;
         boolean fim = false;
+
+
         System.out.println("\n================================================\n");
         exibirTabuleiro(tabuleiro_vazio);
-        while (fim == false){
+        while (verificarFimDeJogo(tabuleiro) == false || fim == false){
 
             System.out.println("Digite a linha do ponto que voce deseja atacar (0-9): ");
             linha = sc.nextInt();
@@ -233,25 +232,39 @@ public class Trabalho {
                 System.out.println("Você já atacou esse ponto! Escolha outro.");
                 continue;
             }
+
             tentativas++;
 
-            if (tabuleiro_real[linha][coluna] == "~"){
+            if (tabuleiro[linha][coluna] == "~"){
                 System.out.println("Voce errou!");
-                tabuleiro_real[linha][coluna] = "O";
+                tabuleiro[linha][coluna] = "O";
                 tabuleiro_vazio[linha][coluna] = "O";
                 exibirTabuleiro(tabuleiro_vazio);
             }
-            if (tabuleiro_real[linha][coluna] == "N"){
+            if (tabuleiro[linha][coluna] == "N"){
                 System.out.println("Voce acertou um navio!");
-                tabuleiro_real[linha][coluna] = "X";
+                tabuleiro[linha][coluna] = "X";
                 tabuleiro_vazio[linha][coluna] = "X";
                 exibirTabuleiro(tabuleiro_vazio);
             }
+            if (tentativas > limiteTentativas){
+                System.out.println("\n============================");
+                System.out.println("FIM DE JOGO!");
+                System.out.println("Você excedeu o limite de tentativas!");
+                System.out.println("O JOGADOR 1 (DEFENSOR) VENCEU!");
+                System.out.println("============================\n");
+                fim = true;
+            }
+            fim = true;
         }
-        fim = true;
+        if (verificarFimDeJogo(tabuleiro)){
+            System.out.println("\n============================");
+            System.out.println("PARABÉNS! O JOGADOR 2 (ATACANTE) VENCEU!");
+            System.out.println("Todos os navios foram destruídos!");
+            System.out.println("============================");
+            fim = true;
+        }
     }
-
-
 
     static void main() {
         Scanner sc = new Scanner(System.in);
@@ -264,12 +277,14 @@ public class Trabalho {
         exibirTabuleiro(tabuleiro_navios);
         posicionarNavioUsuario(tabuleiro_navios, "Fragata", 3);
         exibirTabuleiro(tabuleiro_navios);
-        posicionarNavioUsuario(tabuleiro_navios, "Submarino", 2);
-        exibirTabuleiro(tabuleiro_navios);
-        posicionarNavioUsuario(tabuleiro_navios, "Bote", 1);
-        exibirTabuleiro(tabuleiro_navios);
-        limparTerminal();
-
+        for (int i = 0; i < 3; i++) {
+            posicionarNavioUsuario(tabuleiro_navios, "Submarino", 2);
+            exibirTabuleiro(tabuleiro_navios);
+        }
+        for (int i = 0; i < 3; i++) {
+            posicionarNavioUsuario(tabuleiro_navios, "Bote", 1);
+            exibirTabuleiro(tabuleiro_navios);
+        }
         realizarAtaque(tabuleiro_navios, tabuleiro_vazio);
 
     }
